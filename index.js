@@ -51,3 +51,4 @@ exports.imageResizer = async (event) => {
   }
 };
 
+// Test update
