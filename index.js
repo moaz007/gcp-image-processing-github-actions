@@ -53,3 +53,4 @@ exports.imageResizer = async (event) => {
 
 // Test update
 // Trigger verification
+// Testing CI/CD pipeline
