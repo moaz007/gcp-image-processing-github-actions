@@ -1,0 +1,19 @@
+steps:
+  - name: 'gcr.io/cloud-builders/npm'
+    args: ['install']
+
+  - name: 'gcr.io/cloud-builders/gcloud'
+    entrypoint: 'bash'
+    args:
+      - '-c'
+      - |
+        gcloud functions deploy imageResizer \
+          --gen2 \
+          --runtime=nodejs18 \
+          --region=us-central1 \
+          --trigger-event=google.storage.object.finalize \
+          --trigger-resource=upload-bucket-gcp-new \
+          --entry-point=imageResizer \
+          --set-env-vars=PROCESSED_BUCKET=processed-bucket-gcp-new
+timeout: 1200s
+
