@@ -1,0 +1,30 @@
+service: gcp-image-processing
+
+provider:
+  name: google
+  runtime: nodejs18
+  region: us-central1
+  project: image-resizing-js
+  credentials: ~/gcp-keyfile.json
+
+functions:
+  imageResizer:
+    handler: handler.imageResizer
+    events:
+      - eventType: google.storage.object.finalize
+        resource: projects/_/buckets/upload-bucket-gcp-new
+    environment:
+      PROCESSED_BUCKET: processed-bucket-gcp-new
+
+resources:
+  Resources:
+    UploadBucket:
+      Type: google::storage::v1::Bucket
+      Properties:
+        name: upload-bucket-gcp-new
+
+    ProcessedBucket:
+      Type: google::storage::v1::Bucket
+      Properties:
+        name: processed-bucket-gcp-new
+

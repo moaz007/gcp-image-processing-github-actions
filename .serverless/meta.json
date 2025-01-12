@@ -1,0 +1,90 @@
+{
+  "/home/moaz/resize-function": {
+    "versionSfCore": null,
+    "versionFramework": "4.4.18",
+    "isWithinCompose": false,
+    "isCompose": false,
+    "composeOrgName": null,
+    "composeResolverProviders": {
+      "default-aws-credential-resolver": "<REDACTED>"
+    },
+    "composeServiceName": null,
+    "servicePath": "/home/moaz/resize-function",
+    "serviceConfigFileName": "serverless.yml",
+    "service": {
+      "service": "gcp-image-processing",
+      "provider": {
+        "name": "google",
+        "runtime": "nodejs18",
+        "region": "us-central1",
+        "project": "image-resizing-js",
+        "credentials": "<REDACTED>"
+      },
+      "functions": {
+        "imageResizer": {
+          "handler": "handler.imageResizer",
+          "events": [
+            {
+              "eventType": "google.storage.object.finalize",
+              "resource": "projects/_/buckets/upload-bucket-gcp-new"
+            }
+          ],
+          "environment": {
+            "PROCESSED_BUCKET": "processed-bucket-gcp-new"
+          }
+        }
+      },
+      "resources": {
+        "Resources": {
+          "UploadBucket": {
+            "Type": "google::storage::v1::Bucket",
+            "Properties": {
+              "name": "upload-bucket-gcp-new"
+            }
+          },
+          "ProcessedBucket": {
+            "Type": "google::storage::v1::Bucket",
+            "Properties": {
+              "name": "processed-bucket-gcp-new"
+            }
+          }
+        }
+      }
+    },
+    "serviceRawFile": "service: gcp-image-processing\n\nprovider:\n  name: google\n  runtime: nodejs18\n  region: us-central1\n  project: image-resizing-js\n  credentials: ~/gcp-keyfile.json\n\nfunctions:\n  imageResizer:\n    handler: handler.imageResizer\n    events:\n      - eventType: google.storage.object.finalize\n        resource: projects/_/buckets/upload-bucket-gcp-new\n    environment:\n      PROCESSED_BUCKET: processed-bucket-gcp-new\n\nresources:\n  Resources:\n    UploadBucket:\n      Type: google::storage::v1::Bucket\n      Properties:\n        name: upload-bucket-gcp-new\n\n    ProcessedBucket:\n      Type: google::storage::v1::Bucket\n      Properties:\n        name: processed-bucket-gcp-new\n\n",
+    "command": [
+      "deploy"
+    ],
+    "options": {},
+    "error": {
+      "message": "Serverless Framework V.4 only supports \"aws\" as a Provider. Please look into Extensions for a better multi-Provider experience.",
+      "code": "FRAMEWORK_UNSUPPORTED_PROVIDER"
+    },
+    "params": {},
+    "machineId": "9322b645867a3ea32bac75d88f79c3aa",
+    "stage": "dev",
+    "accessKeyV2": "<REDACTED>",
+    "accessKeyV1": "<REDACTED>",
+    "orgId": "29af5ad5-6a31-4cd2-b546-6a469f1aef45",
+    "orgName": "moaz007",
+    "userId": "rgXwfPmY9ZvXtF42zl",
+    "dashboard": {
+      "isEnabledForService": false,
+      "requiredAuthentication": false,
+      "orgFeaturesInUse": null,
+      "orgObservabilityIntegrations": null,
+      "serviceAppId": null,
+      "serviceProvider": null,
+      "instanceParameters": null
+    },
+    "userName": "moaz007",
+    "subscription": null,
+    "userEmail": "moaz.nosh@live.com",
+    "projectType": "traditional",
+    "serviceProviderAwsCfStackId": null,
+    "serviceProviderAwsCfStackCreated": null,
+    "serviceProviderAwsCfStackUpdated": null,
+    "serviceProviderAwsCfStackStatus": null,
+    "serviceProviderAwsCfStackOutputs": null
+  }
+}

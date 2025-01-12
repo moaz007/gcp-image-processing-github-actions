@@ -2,17 +2,17 @@ const { Storage } = require('@google-cloud/storage');
 const sharp = require('sharp');
 const storage = new Storage();
 
-// Initialize cold start tracker
-let isColdStart = true;
+// Global variable to track cold start
+let isColdStartGlobal = true;
 
 exports.imageResizer = async (event) => {
   const startTime = Date.now(); // Start timing execution
 
   try {
-    // Detect and log cold start
-    const coldStartStatus = isColdStart;
+    // Detect cold start based on global variable
+    const coldStartStatus = isColdStartGlobal;
     console.log(`Cold start: ${coldStartStatus}`);
-    isColdStart = false;
+    isColdStartGlobal = false; // Mark as warm after first invocation
 
     // Log event details for debugging
     console.log("Event received:", JSON.stringify(event, null, 2));
@@ -51,8 +51,3 @@ exports.imageResizer = async (event) => {
   }
 };
 
-// Test update
-// Trigger verification
-// Testing CI/CD pipeline
-// Test CI/CD pipeline
-// Re-trigger build

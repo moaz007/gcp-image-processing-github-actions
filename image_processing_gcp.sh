@@ -51,8 +51,8 @@ LOGS=$(gcloud functions logs read imageResizer --region=us-central1 --limit=10)
 # Extract cold start status
 COLD_START=$(echo "$LOGS" | grep -m 1 "Cold start:" | awk -F': ' '{print $2}')
 
-# Extract execution time
-EXECUTION_TIME=$(echo "$LOGS" | grep -m 1 "Execution time:" | awk -F': ' '{print $2}' | tr -d 'ms')
+# Extract execution time in seconds
+EXECUTION_TIME=$(echo "$LOGS" | grep -m 1 "Execution time:" | awk -F': ' '{print $2}' | tr -d 's')
 
 # Display results
 echo "Cold start: ${COLD_START:-false}"
