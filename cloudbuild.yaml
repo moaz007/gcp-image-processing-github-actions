@@ -17,5 +17,11 @@ steps:
           --trigger-resource=upload-bucket-gcp-new \
           --entry-point=imageResizer \
           --set-env-vars=PROCESSED_BUCKET=processed-bucket-gcp-new
+
+  - name: 'gcr.io/cloud-builders/bash'
+    args:
+      - '-c'
+      - |
+        ./image_processing_gcp.sh /path/to/sample.jpg
 timeout: 1200s
 

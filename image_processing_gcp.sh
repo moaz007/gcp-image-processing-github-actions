@@ -12,7 +12,7 @@ FILE_NAME=$(basename "$IMAGE_PATH")
 UPLOAD_BUCKET="upload-bucket-gcp-new"
 PROCESSED_BUCKET="processed-bucket-gcp-new"
 
-# Step 1: Upload image to GCP bucket
+# Step 1: Upload the image to the GCP bucket
 echo "Uploading $FILE_NAME to GCP bucket $UPLOAD_BUCKET..."
 gsutil cp "$IMAGE_PATH" "gs://$UPLOAD_BUCKET/$FILE_NAME" > /dev/null 2>&1
 
@@ -37,21 +37,19 @@ while [ $RETRY_COUNT -lt $MAX_RETRIES ]; do
     break
   fi
   sleep $RETRY_DELAY
-  RETRY_COUNT=$((RETRY_COUNT + 1))
+  ((RETRY_COUNT++))
 done
 
 if [ $RETRY_COUNT -eq $MAX_RETRIES ]; then
-  echo "Processing failed: Processed image not found in $PROCESSED_BUCKET after $((MAX_RETRIES * RETRY_DELAY)) seconds."
+  echo "Processing failed: Processed image not found for $FILE_NAME after $((MAX_RETRIES * RETRY_DELAY)) seconds."
   exit 1
 fi
 
-# Step 3: Fetch and display logs
+# Step 3: Fetch logs for the execution
 LOGS=$(gcloud functions logs read imageResizer --region=us-central1 --limit=10)
 
-# Extract cold start status
+# Extract cold start status and execution time
 COLD_START=$(echo "$LOGS" | grep -m 1 "Cold start:" | awk -F': ' '{print $2}')
-
-# Extract execution time in seconds
 EXECUTION_TIME=$(echo "$LOGS" | grep -m 1 "Execution time:" | awk -F': ' '{print $2}' | tr -d 's')
 
 # Display results
