@@ -1,5 +1,6 @@
 options:
   logging: CLOUD_LOGGING_ONLY
+
 steps:
   - name: 'gcr.io/cloud-builders/npm'
     args: ['install']
@@ -18,10 +19,5 @@ steps:
           --entry-point=imageResizer \
           --set-env-vars=PROCESSED_BUCKET=processed-bucket-gcp-new
 
-  - name: 'gcr.io/cloud-builders/bash'
-    args:
-      - '-c'
-      - |
-        ./image_processing_gcp.sh /path/to/sample.jpg
 timeout: 1200s
 
