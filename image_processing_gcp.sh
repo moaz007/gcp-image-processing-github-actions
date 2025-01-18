@@ -9,8 +9,8 @@ fi
 # Variables
 IMAGE_PATH="$1"
 FILE_NAME=$(basename "$IMAGE_PATH")
-UPLOAD_BUCKET="upload-bucket-gcp-new"
-PROCESSED_BUCKET="processed-bucket-gcp-new"
+UPLOAD_BUCKET="upload-bucket-experiment"
+PROCESSED_BUCKET="processed-bucket-experiment"
 
 # Step 1: Upload the image to the GCP bucket
 echo "Uploading $FILE_NAME to GCP bucket $UPLOAD_BUCKET..."
