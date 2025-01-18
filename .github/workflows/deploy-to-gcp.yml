@@ -7,40 +7,31 @@ on:
 
 jobs:
   deploy:
-    name: Deploy to Google Cloud Function
     runs-on: ubuntu-latest
 
     steps:
-    # Checkout the repository
-    - name: Checkout code
-      uses: actions/checkout@v3
+      - name: Checkout code
+        uses: actions/checkout@v3
 
-    # Set up Node.js
-    - name: Set up Node.js
-      uses: actions/setup-node@v3
-      with:
-        node-version: 18
+      - name: Authenticate to Google Cloud
+        uses: google-github-actions/auth@v1
+        with:
+          credentials_json: ${{ secrets.GCP_CREDENTIALS }}
 
-    # Install dependencies
-    - name: Install dependencies
-      run: npm install
+      - name: Set up Cloud SDK
+        uses: google-github-actions/setup-gcloud@v1
+        with:
+          project_id: bamboo-medium-448219-i3
+          export_default_credentials: true
 
-    # Authenticate with GCP
-    - name: Authenticate to GCP
-      uses: google-github-actions/auth@v1
-      with:
-        credentials_json: ${{ secrets.GCP_SERVICE_ACCOUNT_KEY }}
-
-    # Deploy the Cloud Function
-    - name: Deploy Cloud Function
-      run: |
-        gcloud functions deploy imageResizer \
-          --gen2 \
-          --runtime=nodejs18 \
-          --region=us-central1 \
-          --trigger-event=google.storage.object.finalize \
-          --trigger-resource=upload-bucket-experiment \
-          --entry-point=imageResizer \
-          --set-env-vars=PROCESSED_BUCKET=processed-bucket-experiment \
-          --project=bamboo-medium-448219-i3
+      - name: Deploy to Cloud Functions
+        run: |
+          gcloud functions deploy imageResizer \
+            --gen2 \
+            --runtime=nodejs18 \
+            --region=us-central1 \
+            --trigger-event=google.storage.object.finalize \
+            --trigger-resource=upload-bucket-experiment \
+            --entry-point=imageResizer \
+            --set-env-vars=PROCESSED_BUCKET=processed-bucket-experiment
 
