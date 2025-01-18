@@ -1,0 +1,42 @@
+name: Deploy to GCP
+
+on:
+  push:
+    branches:
+      - main
+
+jobs:
+  deploy:
+    name: Deploy to GCP
+    runs-on: ubuntu-latest
+
+    steps:
+    - name: Checkout Code
+      uses: actions/checkout@v3
+
+    - name: Set up Node.js
+      uses: actions/setup-node@v3
+      with:
+        node-version: '18'
+
+    - name: Install Dependencies
+      run: npm install
+
+    - name: Authenticate with GCP
+      env:
+        GOOGLE_APPLICATION_CREDENTIALS: ${{ secrets.GCP_CREDENTIALS }}
+      run: |
+        echo "${{ secrets.GCP_CREDENTIALS }}" > $HOME/gcloud-key.json
+        gcloud auth activate-service-account --key-file=$HOME/gcloud-key.json
+        gcloud config set project bamboo-medium-448219-i3
+
+    - name: Deploy Cloud Function
+      run: |
+        gcloud functions deploy imageResizer \
+          --gen2 \
+          --runtime=nodejs18 \
+          --region=us-central1 \
+          --trigger-event=google.storage.object.finalize \
+          --trigger-resource=upload-bucket-gcp-new \
+          --entry-point=imageResizer \
+          --set-env-vars=PROCESSED_BUCKET=processed-bucket-gcp-new
