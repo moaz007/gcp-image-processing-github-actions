@@ -13,6 +13,15 @@ jobs:
       - name: Checkout code
         uses: actions/checkout@v3
 
+      - name: Install dependencies
+        run: npm install
+
+      - name: Run Lint
+        run: npm run lint
+
+      - name: Run Tests
+        run: npm test
+
       - name: Authenticate to Google Cloud
         uses: google-github-actions/auth@v1
         with:
@@ -26,7 +35,7 @@ jobs:
 
       - name: Deploy to Cloud Functions
         run: |
-          gcloud functions deploy image-resizer \
+          gcloud functions deploy imageResizer \
             --gen2 \
             --runtime=nodejs18 \
             --region=us-central1 \
