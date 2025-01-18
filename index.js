@@ -51,3 +51,4 @@ exports.imageResizer = async (event) => {
   }
 };
 
+// Triggering GitHub Actions workflow
