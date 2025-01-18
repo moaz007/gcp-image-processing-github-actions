@@ -4,7 +4,7 @@ provider:
   name: google
   runtime: nodejs18
   region: us-central1
-  project: image-resizing-js
+  project: bamboo-medium-448219-i3
   credentials: ~/gcp-keyfile.json
 
 functions:
@@ -12,19 +12,19 @@ functions:
     handler: handler.imageResizer
     events:
       - eventType: google.storage.object.finalize
-        resource: projects/_/buckets/upload-bucket-gcp-new
+        resource: projects/_/buckets/upload-bucket-experiment
     environment:
-      PROCESSED_BUCKET: processed-bucket-gcp-new
+      PROCESSED_BUCKET: processed-bucket-experiment
 
 resources:
   Resources:
     UploadBucket:
       Type: google::storage::v1::Bucket
       Properties:
-        name: upload-bucket-gcp-new
+        name: upload-bucket-experiment
 
     ProcessedBucket:
       Type: google::storage::v1::Bucket
       Properties:
-        name: processed-bucket-gcp-new
+        name: processed-bucket-experiment
 
