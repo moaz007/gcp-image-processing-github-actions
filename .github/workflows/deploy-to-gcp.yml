@@ -7,29 +7,31 @@ on:
 
 jobs:
   deploy:
-    name: Deploy to GCP
+    name: Deploy to Google Cloud Function
     runs-on: ubuntu-latest
 
     steps:
-    - name: Checkout Code
+    # Checkout the repository
+    - name: Checkout code
       uses: actions/checkout@v3
 
+    # Set up Node.js
     - name: Set up Node.js
       uses: actions/setup-node@v3
       with:
-        node-version: '18'
+        node-version: 18
 
-    - name: Install Dependencies
+    # Install dependencies
+    - name: Install dependencies
       run: npm install
 
-    - name: Authenticate with GCP
-      env:
-        GOOGLE_APPLICATION_CREDENTIALS: ${{ secrets.GCP_CREDENTIALS }}
-      run: |
-        echo "${{ secrets.GCP_CREDENTIALS }}" > $HOME/gcloud-key.json
-        gcloud auth activate-service-account --key-file=$HOME/gcloud-key.json
-        gcloud config set project bamboo-medium-448219-i3
+    # Authenticate with GCP
+    - name: Authenticate to GCP
+      uses: google-github-actions/auth@v1
+      with:
+        credentials_json: ${{ secrets.GCP_SERVICE_ACCOUNT_KEY }}
 
+    # Deploy the Cloud Function
     - name: Deploy Cloud Function
       run: |
         gcloud functions deploy imageResizer \
@@ -37,6 +39,8 @@ jobs:
           --runtime=nodejs18 \
           --region=us-central1 \
           --trigger-event=google.storage.object.finalize \
-          --trigger-resource=upload-bucket-gcp-new \
+          --trigger-resource=upload-bucket-experiment \
           --entry-point=imageResizer \
-          --set-env-vars=PROCESSED_BUCKET=processed-bucket-gcp-new
+          --set-env-vars=PROCESSED_BUCKET=processed-bucket-experiment \
+          --project=bamboo-medium-448219-i3
+
