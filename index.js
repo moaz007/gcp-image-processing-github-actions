@@ -1,10 +1,13 @@
 const { Storage } = require('@google-cloud/storage');
 const sharp = require('sharp');
+const express = require('express'); // For health check listener
+
 const storage = new Storage();
 
 // Initialize cold start tracker
 let isColdStart = true; // Declare globally
 
+// Main function to process images
 exports["image-resizer"] = async (event) => {
   const startTime = Date.now(); // Start timing execution
 
@@ -57,7 +60,6 @@ exports["image-resizer"] = async (event) => {
 
 // Listener for Cloud Run health checks (optional, for troubleshooting deployment issues)
 if (require.main === module) {
-  const express = require('express');
   const app = express();
 
   app.get('/health', (req, res) => res.status(200).send('Healthy'));
