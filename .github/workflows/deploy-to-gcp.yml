@@ -29,7 +29,6 @@ jobs:
         uses: google-github-actions/setup-gcloud@v1
         with:
           project_id: bamboo-medium-448219-i3
-          credentials_json: ${{ secrets.GCP_CREDENTIALS }}
           install_components: alpha,beta,kubectl
 
       # Ensure the Artifact Registry exists
