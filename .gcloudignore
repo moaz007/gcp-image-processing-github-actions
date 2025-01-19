@@ -6,7 +6,6 @@ __tests__/
 .git/
 .gcloudignore
 package-lock.json
-.DS_Store
 .env
 README.md
 
