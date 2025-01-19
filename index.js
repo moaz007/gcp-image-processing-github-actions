@@ -3,15 +3,14 @@ const sharp = require('sharp');
 const storage = new Storage();
 
 // Initialize cold start tracker
-let isColdStart = true;
+let isColdStart = true; // Declare globally
 
-exports.imageResizer = async (event) => {
+exports["image-resizer"] = async (event) => {
   const startTime = Date.now(); // Start timing execution
 
   try {
     // Detect and log cold start
-    const coldStartStatus = isColdStart;
-    console.log(`Cold start: ${coldStartStatus}`);
+    console.log(`Cold start: ${isColdStart}`);
     isColdStart = false;
 
     // Log event details for debugging
@@ -36,10 +35,15 @@ exports.imageResizer = async (event) => {
     console.log(`File downloaded to ${tempFilePath}`);
 
     // Resize the image
-    const resizedBuffer = await sharp(tempFilePath).resize(300, 300).toBuffer();
+    const resizedBuffer = await sharp(tempFilePath)
+      .resize(300, 300, { fit: 'cover', position: 'center' }) // Ensure consistent resizing
+      .toBuffer();
 
     // Upload resized image
     const processedBucketName = process.env.PROCESSED_BUCKET;
+    if (!processedBucketName) {
+      throw new Error("Processed bucket name is not defined in the environment variables.");
+    }
     await storage.bucket(processedBucketName).file(processedFileName).save(resizedBuffer);
     console.log(`Processing successful: Processed image saved as ${processedFileName} in gs://${processedBucketName}/`);
 
@@ -51,6 +55,15 @@ exports.imageResizer = async (event) => {
   }
 };
 
-// Triggering GitHub Actions workflow
-// Updated: Testing GitHub Action workflow for deployment....
+// Listener for Cloud Run health checks (optional, for troubleshooting deployment issues)
+if (require.main === module) {
+  const express = require('express');
+  const app = express();
+
+  app.get('/health', (req, res) => res.status(200).send('Healthy'));
+  const PORT = process.env.PORT || 8080;
+  app.listen(PORT, () => {
+    console.log(`Server is running on port ${PORT}`);
+  });
+}
 
