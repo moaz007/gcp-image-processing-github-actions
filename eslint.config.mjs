@@ -1,5 +1,6 @@
 import globals from "globals";
 import pluginJs from "@eslint/js";
+import pluginJest from "eslint-plugin-jest";
 
 /** @type {import('eslint').Linter.Config[]} */
 export default [
@@ -8,11 +9,16 @@ export default [
     languageOptions: {
       sourceType: "commonjs",
       globals: {
-        ...globals.browser,
-        ...globals.node, // Add Node.js globals to fix "process" undefined issue
+        ...globals.browser, // Browser globals
+        ...globals.node,    // Node.js globals
       },
     },
   },
-  pluginJs.configs.recommended,
+  pluginJs.configs.recommended, // ESLint recommended config
+  pluginJest.configs.recommended, // Jest-specific recommended config
+  {
+    files: ["**/__tests__/**/*.js"], // Apply Jest plugin only to test files
+    plugins: { jest: pluginJest },
+  },
 ];
 
