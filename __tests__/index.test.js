@@ -11,9 +11,10 @@ jest.mock('@google-cloud/storage', () => {
   return { Storage: jest.fn(() => mStorage) };
 });
 
-const { imageResizer } = require("../index");
+// Import the function using bracket notation for "image-resizer"
+const { ["image-resizer"]: imageResizer } = require("../index");
 
-describe("imageResizer", () => {
+describe("image-resizer", () => {
   it("should be a function", () => {
     expect(typeof imageResizer).toBe("function");
   });
