@@ -1,18 +1,16 @@
-// Mock @google-cloud/storage
 jest.mock('@google-cloud/storage', () => {
   const mStorage = {
     bucket: jest.fn(() => ({
       file: jest.fn(() => ({
-        download: jest.fn(() => Promise.resolve()), // Mock download method
-        save: jest.fn(() => Promise.resolve()),    // Mock save method
+        download: jest.fn(() => Promise.resolve()),
+        save: jest.fn(() => Promise.resolve()),
       })),
     })),
   };
   return { Storage: jest.fn(() => mStorage) };
 });
 
-// Import the function using bracket notation for "image-resizer"
-const { ["image-resizer"]: imageResizer } = require("../index");
+const { "image-resizer": imageResizer } = require("../index");
 
 describe("image-resizer", () => {
   it("should be a function", () => {
