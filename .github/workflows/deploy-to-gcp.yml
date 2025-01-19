@@ -31,16 +31,20 @@ jobs:
           project_id: bamboo-medium-448219-i3
           export_default_credentials: true
 
+      # Ensure the Artifact Registry exists
+      - name: Ensure Artifact Registry exists
+        run: |
+          REPO_NAME="gcf-artifacts"
+          REGION="us-central1"
+          gcloud artifacts repositories describe $REPO_NAME --location=$REGION || \
+          gcloud artifacts repositories create $REPO_NAME \
+            --repository-format=docker \
+            --location=$REGION \
+            --description="Repository for Cloud Function artifacts"
+
       # Deploy to Cloud Functions
       - name: Deploy to Cloud Functions
         run: |
-          # Ensure the Artifact Registry exists
-          gcloud artifacts repositories create gcf-artifacts \
-            --repository-format=docker \
-            --location=us-central1 \
-            || echo "Artifact Registry already exists"
-          
-          # Deploy the function
           gcloud functions deploy image-resizer \
             --gen2 \
             --runtime=nodejs18 \
