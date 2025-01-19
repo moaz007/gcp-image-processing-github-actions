@@ -10,29 +10,36 @@ jobs:
     runs-on: ubuntu-latest
 
     steps:
+      # Step 1: Checkout the repository code
       - name: Checkout code
         uses: actions/checkout@v3
 
+      # Step 2: Install project dependencies
       - name: Install dependencies
         run: npm install
 
+      # Step 3: Run ESLint for linting
       - name: Run Lint
         run: npm run lint
 
+      # Step 4: Run tests with Jest
       - name: Run Tests
         run: npm test
 
+      # Step 5: Authenticate to Google Cloud
       - name: Authenticate to Google Cloud
         uses: google-github-actions/auth@v1
         with:
           credentials_json: ${{ secrets.GCP_CREDENTIALS }}
 
+      # Step 6: Set up Google Cloud SDK
       - name: Set up Cloud SDK
         uses: google-github-actions/setup-gcloud@v1
         with:
           project_id: bamboo-medium-448219-i3
           export_default_credentials: true
 
+      # Step 7: Deploy to Google Cloud Functions
       - name: Deploy to Cloud Functions
         run: |
           gcloud functions deploy image-resizer \
@@ -42,5 +49,8 @@ jobs:
             --trigger-event=google.storage.object.finalize \
             --trigger-resource=upload-bucket-experiment \
             --entry-point=image-resizer \
-            --set-env-vars=PROCESSED_BUCKET=processed-bucket-experiment
+            --set-env-vars=PROCESSED_BUCKET=processed-bucket-experiment \
+            --source=. \
+            --timeout=120s \
+            --project=bamboo-medium-448219-i3
 
