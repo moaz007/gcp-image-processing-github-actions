@@ -10,19 +10,22 @@ export default [
       sourceType: "commonjs",
       globals: {
         ...globals.browser,
-        ...globals.node, // Add Node.js globals
+        ...globals.node,
+      },
+    },
+  },
+  {
+    files: ["**/__tests__/**/*.js"], // Apply Jest-specific settings for test files
+    languageOptions: {
+      globals: {
+        ...globals.jest, // Add Jest globals
       },
     },
     plugins: {
-      jest: pluginJest, // Jest plugin configuration
+      jest: pluginJest,
     },
     rules: {
-      ...pluginJest.configs.recommended.rules, // Apply Jest recommended rules
-    },
-    settings: {
-      jest: {
-        version: 29, // Specify your Jest version
-      },
+      ...pluginJest.configs.recommended.rules,
     },
   },
   pluginJs.configs.recommended,
