@@ -10,22 +10,37 @@ jobs:
     runs-on: ubuntu-latest
 
     steps:
+      # Checkout the repository
       - name: Checkout code
         uses: actions/checkout@v3
 
+      # Install dependencies
+      - name: Install dependencies
+        run: npm install --only=production
+
+      # Authenticate to Google Cloud
       - name: Authenticate to Google Cloud
         uses: google-github-actions/auth@v1
         with:
           credentials_json: ${{ secrets.GCP_CREDENTIALS }}
 
+      # Set up Cloud SDK
       - name: Set up Cloud SDK
         uses: google-github-actions/setup-gcloud@v1
         with:
           project_id: bamboo-medium-448219-i3
           export_default_credentials: true
 
+      # Deploy to Cloud Functions
       - name: Deploy to Cloud Functions
         run: |
+          # Ensure the Artifact Registry exists
+          gcloud artifacts repositories create gcf-artifacts \
+            --repository-format=docker \
+            --location=us-central1 \
+            || echo "Artifact Registry already exists"
+          
+          # Deploy the function
           gcloud functions deploy image-resizer \
             --gen2 \
             --runtime=nodejs18 \
@@ -34,5 +49,6 @@ jobs:
             --trigger-resource=upload-bucket-experiment \
             --entry-point=image-resizer \
             --set-env-vars=PROCESSED_BUCKET=processed-bucket-experiment \
-            --source=.
+            --source=. \
+            --docker-repository=us-central1-docker.pkg.dev/bamboo-medium-448219-i3/gcf-artifacts
 

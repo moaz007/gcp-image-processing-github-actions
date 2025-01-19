@@ -46,15 +46,19 @@ if [ $RETRY_COUNT -eq $MAX_RETRIES ]; then
 fi
 
 # Step 3: Fetch logs for the execution
-LOGS=$(gcloud functions logs read imageResizer --region=us-central1 --limit=10)
+LOGS=$(gcloud functions logs read image-resizer --region=us-central1 --limit=10)
 
 # Extract cold start status and execution time
-COLD_START=$(echo "$LOGS" | grep -m 1 "Cold start:" | awk -F': ' '{print $2}')
-EXECUTION_TIME=$(echo "$LOGS" | grep -m 1 "Execution time:" | awk -F': ' '{print $2}' | tr -d 's')
+COLD_START=$(echo "$LOGS" | grep -i -m 1 "Cold start:" | awk -F': ' '{print $2}')
+EXECUTION_TIME=$(echo "$LOGS" | grep -i -m 1 "Execution time:" | awk -F': ' '{print $2}' | tr -d 's')
 
-# Display results
-echo "Cold start: ${COLD_START:-false}"
-echo "Execution time: ${EXECUTION_TIME:-N/A}s"
+# Check if logs were retrieved
+if [ -z "$COLD_START" ] || [ -z "$EXECUTION_TIME" ]; then
+  echo "Warning: Unable to retrieve logs for execution details."
+else
+  echo "Cold start: ${COLD_START:-false}"
+  echo "Execution time: ${EXECUTION_TIME:-N/A}s"
+fi
 
 echo "Workflow completed successfully."
 
