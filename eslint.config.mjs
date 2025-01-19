@@ -1,6 +1,6 @@
 import globals from "globals";
 import pluginJs from "@eslint/js";
-import pluginJest from "eslint-plugin-jest"; // Ensure jest plugin is installed
+import pluginJest from "eslint-plugin-jest";
 
 /** @type {import('eslint').Linter.FlatConfig[]} */
 export default [
@@ -14,10 +14,15 @@ export default [
       },
     },
     plugins: {
-      jest: pluginJest, // Define Jest plugin as an object
+      jest: pluginJest, // Jest plugin configuration
     },
     rules: {
-      ...pluginJest.configs.recommended.rules, // Use Jest recommended rules
+      ...pluginJest.configs.recommended.rules, // Apply Jest recommended rules
+    },
+    settings: {
+      jest: {
+        version: 29, // Specify your Jest version
+      },
     },
   },
   pluginJs.configs.recommended,
