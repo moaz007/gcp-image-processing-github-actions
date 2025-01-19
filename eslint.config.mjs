@@ -1,24 +1,25 @@
 import globals from "globals";
 import pluginJs from "@eslint/js";
-import pluginJest from "eslint-plugin-jest";
+import pluginJest from "eslint-plugin-jest"; // Ensure jest plugin is installed
 
-/** @type {import('eslint').Linter.Config[]} */
+/** @type {import('eslint').Linter.FlatConfig[]} */
 export default [
   {
     files: ["**/*.js"],
     languageOptions: {
       sourceType: "commonjs",
       globals: {
-        ...globals.browser, // Browser globals
-        ...globals.node,    // Node.js globals
+        ...globals.browser,
+        ...globals.node, // Add Node.js globals
       },
     },
+    plugins: {
+      jest: pluginJest, // Define Jest plugin as an object
+    },
+    rules: {
+      ...pluginJest.configs.recommended.rules, // Use Jest recommended rules
+    },
   },
-  pluginJs.configs.recommended, // ESLint recommended config
-  pluginJest.configs.recommended, // Jest-specific recommended config
-  {
-    files: ["**/__tests__/**/*.js"], // Apply Jest plugin only to test files
-    plugins: { jest: pluginJest },
-  },
+  pluginJs.configs.recommended,
 ];
 
