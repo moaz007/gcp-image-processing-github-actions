@@ -1,12 +1,10 @@
 steps:
-  - name: 'gcr.io/cloud-builders/npm'
-    args: ['install']
-
   - name: 'gcr.io/cloud-builders/gcloud'
     entrypoint: 'bash'
     args:
       - '-c'
       - |
+        echo "Deploying the Cloud Function..."
         gcloud functions deploy image-resizer \
           --gen2 \
           --runtime=nodejs18 \
@@ -15,6 +13,12 @@ steps:
           --trigger-resource=upload-bucket-experiment \
           --entry-point=image-resizer \
           --set-env-vars=PROCESSED_BUCKET=processed-bucket-experiment \
-          --service-account=711052490590-compute@developer.gserviceaccount.com \
-          --source=.
+          --source=. \
+          --docker-repository=us-central1-docker.pkg.dev/bamboo-medium-448219-i3/gcf-artifacts \
+          --logging=CLOUD_LOGGING_ONLY \
+          --set-build-logs-bucket=gs://logs-bucket-bamboo-medium-448219
+
+options:
+  logging: CLOUD_LOGGING_ONLY
+timeout: '540s'
 
