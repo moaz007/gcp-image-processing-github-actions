@@ -4,7 +4,6 @@
   "description": "A GCP Cloud Function project for resizing images.",
   "main": "index.js",
   "scripts": {
-    "lint": "eslint .",
     "test": "jest"
   },
   "dependencies": {
@@ -13,12 +12,9 @@
     "sharp": "^0.33.5"
   },
   "devDependencies": {
-    "@eslint/js": "^8.18.0",
-    "eslint": "^8.18.0",
-    "eslint-plugin-jest": "^28.11.0",
-    "globals": "^13.15.0",
     "jest": "^28.1.0"
   },
   "author": "Your Name",
   "license": "ISC"
 }
+
