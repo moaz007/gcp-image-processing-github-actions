@@ -60,6 +60,7 @@ exports["image-resizer"] = async (event) => {
 
 // Listener for Cloud Run health checks (optional, for troubleshooting deployment issues)
 if (require.main === module) {
+  console.log("Health check listener is starting...");
   const app = express();
 
   app.get('/health', (req, res) => res.status(200).send('Healthy'));
@@ -70,4 +71,4 @@ if (require.main === module) {
 }
 
 // Trigger CI/CD
-//hello world
+
