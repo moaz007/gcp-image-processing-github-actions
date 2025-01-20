@@ -1,6 +1,3 @@
-options:
-  logging: CLOUD_LOGGING_ONLY
-
 steps:
   - name: 'gcr.io/cloud-builders/npm'
     args: ['install']
@@ -10,15 +7,15 @@ steps:
     args:
       - '-c'
       - |
-        gcloud functions deploy imageResizer \
+        gcloud functions deploy image-resizer \
           --gen2 \
           --runtime=nodejs18 \
           --region=us-central1 \
           --trigger-event=google.storage.object.finalize \
           --trigger-resource=upload-bucket-experiment \
-          --entry-point=imageResizer \
+          --entry-point=image-resizer \
           --set-env-vars=PROCESSED_BUCKET=processed-bucket-experiment \
+          --timeout=540s \
           --project=bamboo-medium-448219-i3
-
 timeout: 1200s
 
