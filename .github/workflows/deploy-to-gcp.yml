@@ -42,6 +42,24 @@ jobs:
             --location=$REGION \
             --description="Repository for Cloud Function artifacts"
 
+      # Wait for Active Operations to Complete
+      - name: Wait for Active Operations
+        run: |
+          ACTIVE_OPS=$(gcloud functions operations list \
+            --region=us-central1 \
+            --filter="done:false" \
+            --format="value(name)")
+          if [ -n "$ACTIVE_OPS" ]; then
+            echo "Active operation detected. Waiting for it to complete..."
+            while [ -n "$ACTIVE_OPS" ]; do
+              sleep 30
+              ACTIVE_OPS=$(gcloud functions operations list \
+                --region=us-central1 \
+                --filter="done:false" \
+                --format="value(name)")
+            done
+          fi
+
       # Deploy to Cloud Functions
       - name: Deploy to Cloud Functions
         run: |
