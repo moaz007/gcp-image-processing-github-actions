@@ -1,0 +1,22 @@
+steps:
+  - name: "gcr.io/cloud-builders/gcloud"
+    args:
+      - functions
+      - deploy
+      - image-resizer
+      - --gen2
+      - --runtime=nodejs18
+      - --region=us-central1
+      - --trigger-event=google.storage.object.finalize
+      - --trigger-resource=upload-bucket-experiment
+      - --entry-point=image-resizer
+      - --set-env-vars=PROCESSED_BUCKET=processed-bucket-experiment
+      - --source=.
+      - --stage-bucket=logs-bucket-bamboo-medium-448219
+      - --docker-repository=us-central1-docker.pkg.dev/bamboo-medium-448219-i3/gcf-artifacts
+
+options:
+  logging: CLOUD_LOGGING_ONLY
+
+timeout: "600s"
+

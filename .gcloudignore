@@ -1,0 +1,11 @@
+node_modules/
+*.log
+*.zip
+__tests__/
+*.test.js
+.git/
+.gcloudignore
+package-lock.json
+.env
+README.md
+

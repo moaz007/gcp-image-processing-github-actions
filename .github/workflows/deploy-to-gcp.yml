@@ -1,0 +1,102 @@
+name: Deploy to GCP
+
+on:
+  push:
+    branches:
+      - main
+
+jobs:
+  deploy:
+    runs-on: ubuntu-latest
+
+    steps:
+      # Step 1: Check out our code from GitHub.
+      - name: Checkout code
+        uses: actions/checkout@v3
+
+      # Step 2: Install only the production dependencies.
+      - name: Install dependencies
+        run: npm install --only=production
+
+      # Step 3: Log in to Google Cloud using our credentials.
+      - name: Authenticate to Google Cloud
+        uses: google-github-actions/auth@v1
+        with:
+          credentials_json: ${{ secrets.GCP_CREDENTIALS }}
+
+      # Step 4: Set up the Google Cloud SDK.
+      - name: Set up Cloud SDK
+        uses: google-github-actions/setup-gcloud@v1
+        with:
+          project_id: bamboo-medium-448219-i3
+          install_components: alpha,beta
+
+      # Step 5: Check if our Artifact Registry exists, or create it.
+      - name: Ensure Artifact Registry exists
+        run: |
+          REPO_NAME="gcf-artifacts"
+          REGION="us-central1"
+          gcloud artifacts repositories describe $REPO_NAME --location=$REGION || \
+          gcloud artifacts repositories create $REPO_NAME --repository-format=docker --location=$REGION --description="Repository for Cloud Function artifacts"
+
+      # Step 6: Remove any old Cloud Functions if they’re there.
+      - name: Delete previous Cloud Functions
+        run: |
+          gcloud functions delete uploadImage --quiet --region=us-central1 || true
+          gcloud functions delete processImage --quiet --region=us-central1 || true
+
+      # Step 7: Record when our deployment starts.
+      - name: Log Deploy Start Time
+        id: deploy_start
+        run: echo "::set-output name=start::$(date +%s)"
+
+      # Step 8: Deploy the uploadImage function.
+      - name: Deploy uploadImage function to Cloud Functions
+        run: |
+          gcloud functions deploy uploadImage \
+            --gen2 \
+            --runtime=nodejs22 \
+            --trigger-http \
+            --allow-unauthenticated \
+            --region=us-central1 \
+            --memory=2048MB \
+            --set-env-vars=UPLOAD_BUCKET=upload-bucket-experiment \
+            --source=. \
+            --docker-repository=us-central1-docker.pkg.dev/bamboo-medium-448219-i3/gcf-artifacts
+
+      # Step 9: Deploy the processImage function.
+      - name: Deploy processImage function to Cloud Functions
+        run: |
+          gcloud functions deploy processImage \
+            --gen2 \
+            --runtime=nodejs22 \
+            --trigger-http \
+            --allow-unauthenticated \
+            --region=us-central1 \
+            --memory=2048MB \
+            --set-env-vars=PROCESSED_BUCKET=processed-bucket-experiment \
+            --source=. \
+            --docker-repository=us-central1-docker.pkg.dev/bamboo-medium-448219-i3/gcf-artifacts
+
+      # Step 10: Record when our deployment ends.
+      - name: Log Deploy End Time
+        id: deploy_end
+        run: echo "::set-output name=end::$(date +%s)"
+
+      # Step 11: Calculate how long the deployment took.
+      - name: Calculate Deploy Duration
+        id: calc_duration
+        run: |
+          DEPLOY_DURATION=$(( ${{ steps.deploy_end.outputs.end }} - ${{ steps.deploy_start.outputs.start }} ))
+          echo "Deploy Duration: ${DEPLOY_DURATION} seconds"
+          echo "DEPLOY_DURATION=${DEPLOY_DURATION}" >> $GITHUB_ENV
+
+      # Step 12: Write our deployment duration to Cloud Logging.
+      - name: Publish Deploy Duration to Cloud Logging
+        if: always()
+        run: |
+          CURRENT_TIME=$(date +%s%3N)
+          MESSAGE="Deployment finished. Duration: ${DEPLOY_DURATION}s"
+          gcloud logging write deploy_durations "$MESSAGE" --payload-type=text
+          echo "Published deploy duration to Cloud Logging."
+
