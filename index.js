@@ -32,7 +32,7 @@ exports.uploadImage = async (req, res) => {
 
     // Log current memory usage.
     const memoryUsedMB = (process.memoryUsage().heapUsed / 1024 / 1024).toFixed(2);
-    console.log(`Memory usage: ${memoryUsedMB} MB`);
+    console.log(`Upload Memory usage: ${memoryUsedMB} MB`);
 
     res.status(200).json({
       message: "Image uploaded successfully!",
@@ -42,7 +42,7 @@ exports.uploadImage = async (req, res) => {
   } catch (error) {
     console.error("Upload Error:", error.message);
     const memoryUsedMB = (process.memoryUsage().heapUsed / 1024 / 1024).toFixed(2);
-    console.error(`Memory usage: ${memoryUsedMB} MB`);
+    console.error(`Upload Memory usage: ${memoryUsedMB} MB`);
     res.status(500).json({
       message: "Failed to upload image",
       error: error.message,
@@ -86,7 +86,7 @@ exports.processImage = async (req, res) => {
 
     // Log current memory usage.
     const memoryUsedMB = (process.memoryUsage().heapUsed / 1024 / 1024).toFixed(2);
-    console.log(`Memory usage: ${memoryUsedMB} MB`);
+    console.log(`ProcessImage Memory usage: ${memoryUsedMB} MB`);
 
     res.status(200).json({
       message: "Image processed successfully!",
@@ -97,7 +97,7 @@ exports.processImage = async (req, res) => {
   } catch (error) {
     console.error("Process Error:", error.message);
     const memoryUsedMB = (process.memoryUsage().heapUsed / 1024 / 1024).toFixed(2);
-    console.error(`Memory usage: ${memoryUsedMB} MB`);
+    console.error(`ProcessImage Memory usage: ${memoryUsedMB} MB`);
     res.status(500).json({
       message: "Failed to process image",
       error: error.message,
