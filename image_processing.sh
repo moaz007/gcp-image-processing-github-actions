@@ -55,7 +55,8 @@ PROCESS_EXEC_TIME=$(echo "$PROCESS_RESPONSE" | jq -r '.executionTime')
 
 if [ "$PROCESS_MESSAGE" == "Image processed successfully!" ]; then
   echo "Processing successful: Processed image is saved as $PROCESSED_KEY."
-  echo "Cold start: $PROCESS_COLD_START, Execution time: ${PROCESS_EXEC_TIME}ms"
+  echo "Cold start: $PROCESS_COLD_START"
+  echo "Execution time: ${PROCESS_EXEC_TIME}ms"
 else
   echo "Processing failed. Response: $PROCESS_RESPONSE"
   exit 1
@@ -74,5 +75,8 @@ else
 fi
 
 # Log the workflow metrics to Cloud Logging.
-gcloud logging write workflow_exec_times "Workflow Metrics: uploadExec=${UPLOAD_EXEC_TIME}ms, processExec=${PROCESS_EXEC_TIME}ms, coldstart=${combinedColdstart}, totalWorkflowTime=${totalWorkflowTime}ms" --payload-type=text > /dev/null 2>&1
+gcloud logging write workflow_exec_times \
+"Workflow Metrics: uploadExec=${UPLOAD_EXEC_TIME}ms, Process Execution time (ms): ${PROCESS_EXEC_TIME}, coldstart=${combinedColdstart}, totalWorkflowTime=${totalWorkflowTime}ms" \
+--payload-type=text > /dev/null 2>&1
+
 
